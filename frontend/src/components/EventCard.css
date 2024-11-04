@@ -1,0 +1,40 @@
+/* EventCard styling */
+.event-card {
+    background-color: #f9f9f9;
+    padding: 15px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    text-align: center;
+    transition: transform 0.3s;
+}
+
+.event-card:hover {
+    transform: translateY(-5px);
+}
+
+.event-card h3 {
+    margin: 10px 0;
+}
+
+.event-card p {
+    color: #555;
+}
+
+.event-card button {
+    background-color: #008CBA;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.event-card button:hover {
+    background-color: #007bb5;
+}
+
+/* Registered event button */
+.event-card button[disabled] {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
