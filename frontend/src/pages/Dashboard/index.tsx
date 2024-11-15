@@ -4,6 +4,7 @@ import Home from '../Home';
 import './Dashboard.css';
 
 const Dashboard: React.FC = () => {
+
     return (
         <div className="dashboard">
             <Navbar />
@@ -12,4 +13,4 @@ const Dashboard: React.FC = () => {
     );
 };
 
-export default Dashboard;
+export default React.memo(Dashboard);

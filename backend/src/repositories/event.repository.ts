@@ -8,29 +8,22 @@ export class EventRepository {
             `SELECT e.id, e.event_name AS eventName, e.event_category AS eventCategory,
                     e.start_time AS startTime, e.end_time AS endTime,
                     e.created_on AS createdOn, e.modified_on AS modifiedOn,
-                    EXISTS (
-                        SELECT 1 
-                        FROM user_events ue 
-                        WHERE ue.event_id = e.id 
-                          AND ue.user_id = ?
-                    ) AS registered
-             FROM events e`,
+                    ue.created_on AS registrationDate,
+                    (ue.user_id IS NOT NULL) AS registered
+             FROM events e
+             LEFT JOIN user_events ue ON e.id = ue.event_id AND ue.user_id = ?`,
             [userId]
         );
-
-        const events = rows.map((event: RowDataPacket) => ({
-            ...event,
-            registered: !!event.registered,  
-        }));
-
-        return events as EventResponse[];
+    
+        return rows as EventResponse[];
     }
+    
 
     async getUserRegisteredEvents(userId: number): Promise<Event[]> {
         const [rows] = await pool.query<RowDataPacket[]>(
             `SELECT e.id, e.event_name AS eventName, e.event_category AS eventCategory,
                     e.start_time AS startTime, e.end_time AS endTime,
-                    e.created_on AS createdOn, e.modified_on AS modifiedOn
+                    ue.created_on AS createdOn
              FROM user_events ue 
              JOIN events e ON ue.event_id = e.id
              WHERE ue.user_id = ?`,
@@ -38,6 +31,7 @@ export class EventRepository {
         );
         return rows as Event[];
     }
+    
 
     async createEvent(event: Event): Promise<number> {
         const { eventName, eventCategory, startTime, endTime } = event;

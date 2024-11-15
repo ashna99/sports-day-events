@@ -1,9 +1,12 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useState, useMemo } from 'react';
 import { createContext } from 'use-context-selector';
 
-interface AuthContextProps {
+interface AuthState {
     isLoggedIn: boolean;
     token: string | null;
+}
+
+interface AuthContextProps extends AuthState {
     login: (token: string) => void;
     logout: () => void;
 }
@@ -16,24 +19,38 @@ export const AuthContext = createContext<AuthContextProps>({
 });
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-    const storedToken = localStorage.getItem('token');
-    const [isLoggedIn, setIsLoggedIn] = useState<boolean>(!!storedToken);
-    const [token, setToken] = useState<string | null>(storedToken);
+    const [authState, setAuthState] = useState<AuthState>(() => {
+        const storedToken = localStorage.getItem('token');
+        return {
+            isLoggedIn: !!storedToken,
+            token: storedToken
+        };
+    });
 
     const login = useCallback((token: string) => {
         localStorage.setItem('token', token);
-        setToken(token);
-        setIsLoggedIn(true);
+        setAuthState({
+            isLoggedIn: true,
+            token
+        });
     }, []);
 
     const logout = useCallback(() => {
         localStorage.removeItem('token');
-        setToken(null);
-        setIsLoggedIn(false);
+        setAuthState({
+            isLoggedIn: false,
+            token: null
+        });
     }, []);
 
+    const contextValue = useMemo(() => ({
+        ...authState,
+        login,
+        logout
+    }), [authState, login, logout]);
+
     return (
-        <AuthContext.Provider value={{ isLoggedIn, token, login, logout }}>
+        <AuthContext.Provider value={contextValue}>
             {children}
         </AuthContext.Provider>
     );

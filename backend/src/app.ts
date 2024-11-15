@@ -27,6 +27,9 @@ app.use((err: any, req: Request, res: Response, next: NextFunction) => {
     res.status(status).json({ message });
 });
 
+app.use((req: Request, res: Response) => {
+    res.status(404).json({ message: 'Route not found' });
+});
 app.listen(8080, () => {
     console.log('Server is running on http://localhost:8080');
 });

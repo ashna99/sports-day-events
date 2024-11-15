@@ -2,6 +2,7 @@ import React from 'react';
 import { render, screen, within } from '@testing-library/react';
 import EventList from '../pages/Home/EventList';
 import { Event } from '../types';
+import RegisteredEvents from '../pages/Home/RegisteredEvents';
 
 const mockEvents: Event[] = [
     { id: '1', eventName: 'Soccer', eventCategory: 'Sports', startTime: '2024-11-05T10:00:00', endTime: '2024-11-05T12:00:00', registered: false },
@@ -48,4 +49,20 @@ describe('EventList Component', () => {
           expect(eventCardButton).toBeEnabled();
         });
       });
+
+      it('displays message when there are no upcoming events', () => {
+        render(<EventList events={[]} registeredEvents={mockRegisteredEvents} onRegister={() => {}} />);
+    
+        const noEventsMessage = screen.getByText(/There are no upcoming events/i);
+        expect(noEventsMessage).toBeInTheDocument();
+    });
+
+    it('displays message when user has not registered for any events', () => {
+      render(<RegisteredEvents events={[]} onUnregister={() => {}} />);
+  
+      const noRegisteredEventsMessage = screen.getByText(/User has not registered for any events/i);
+      expect(noRegisteredEventsMessage).toBeInTheDocument();
+  });
+  
+    
 });

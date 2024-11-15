@@ -9,7 +9,7 @@ import { CircularProgress } from '@mui/material';
 const Home: React.FC = () => {
     const [events, setEvents] = useState<Event[]>([]);
     const [loading, setLoading] = useState<boolean>(false);
-    const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
 
     const fetchEvents = useCallback(async () => {
         try {
@@ -17,7 +17,7 @@ const Home: React.FC = () => {
             const eventsData = await EventsService.getAllEvents();
             setEvents(eventsData);
         } catch (err) {
-            setErrorMessage('Failed to fetch events');
+            alert('Failed to fetch events');
         } finally {
             setLoading(false);
         }
@@ -32,10 +32,8 @@ const Home: React.FC = () => {
             setLoading(true);
             await EventsService.registerForEvent(eventToRegister);
             await fetchEvents();
-            setErrorMessage(null); // Clear any previous error messages
         } catch (error) {
-            console.log('Failed to register user for event', error);
-            setErrorMessage('Failed to register user for event');
+            alert('Failed to register user for event');
         } finally {
             setLoading(false);
         }
@@ -46,19 +44,12 @@ const Home: React.FC = () => {
             setLoading(true);
             await EventsService.unregisterForEvent(eventToUnregister?.id ?? '');
             await fetchEvents();
-            setErrorMessage(null); // Clear any previous error messages
         } catch (error) {
-            console.log('Failed to unregister user for event', error);
-            setErrorMessage('Failed to unregister user for event');
+            alert('Failed to unregister user for event');
         } finally {
             setLoading(false);
         }
     };
-    useEffect(() => {
-        if (errorMessage) {
-            alert(errorMessage);
-        }
-    }, [errorMessage]);
 
     const availableEvents = events.filter((event) => !event.registered);
     const registeredEvents = events.filter((event) => event.registered);
